@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: #094cb2;
+  --color-primary-container: #d6e2fb; /* For gradients */
+  --color-tertiary: #6d5e00;
+  
+  --color-surface-lowest: #f1f4f9;
+  --color-surface-dim: #e4e7ec;
+  --color-surface-high: #ffffff;
+  
+  --color-outline-variant: rgba(0, 0, 0, 0.15); /* Ghost border */
+  
+  /* Font Family definitions mapping Next.js font variables */
+  --font-serif: var(--font-noto-serif), serif;
+  --font-sans: var(--font-inter), sans-serif;
+  --font-labels: var(--font-public-sans), sans-serif;
+
+  /* Elevation */
+  --shadow-modal: 0 8px 40px rgba(0, 0, 0, 0.05);
+}
+
+:root {
+  --background: var(--color-surface-lowest);
+  --foreground: #171717;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Glassmorphism utitlity */
+@utility glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+}
