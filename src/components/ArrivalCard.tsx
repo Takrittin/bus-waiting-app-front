@@ -2,106 +2,119 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Bus, CheckCircle2, Wifi, Accessibility } from "lucide-react";
+import { Bus, Star, Radio, Clock } from "lucide-react";
 
 export default function ArrivalCard() {
   // Track whether the card is pulled up or pushed down
   const [isExpanded, setIsExpanded] = useState(false);
+  const [activeToggles, setActiveToggles] = useState<Record<string, boolean>>({
+    '36': true,
+    '21E': true,
+    '93': true,
+    '50': true,
+    '47': true,
+    '141': true,
+    '37': true,
+    '108R': true
+  });
+
+  const busList = [
+    { id: '36', number: '36 / 2-40', route: 'Rama 9 Depot → Si Phraya' },
+    { id: '21E', number: '21E / 4-7E', route: 'EXPRESSWAY : Chulalongkorn University → Wa...' },
+    { id: '93', number: '93 / 1-40', route: 'Nakkila Laemthong Village → Si Phraya' },
+    { id: '50', number: '50 / 2-7', route: 'Rama 7 → Lumphini Park' },
+    { id: '47', number: '47 / 3-41', route: 'Bangkok Department of Lands → Bangkok Port...' },
+    { id: '141', number: '141 / 4-24E', route: 'EXPRESSWAY : Chulalongkorn University → Sa...' },
+    { id: '37', number: '37 / 4-9', route: 'Chulalongkorn University → Phra Pradaeng Pier' },
+    { id: '108R', number: '108R / 4-19', route: 'The Mall Thapra → Victory Monument → (RI...' },
+  ];
+
+  const handleToggle = (id: string) => {
+    setActiveToggles(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   return (
     <motion.div
       // 1. Framer Motion Drag Properties
       drag="y"
-      dragConstraints={{ top: 0, bottom: 0 }} // Forces snap-back if not swiped hard enough
-      dragElastic={0.2} // Adds that nice rubber-band feel
+      dragConstraints={{ top: 0, bottom: 0 }} 
+      dragElastic={0.2} 
       onDragEnd={(e, { offset, velocity }) => {
-        // 2. Logic to detect swipe direction and speed
         const swipeDown = offset.y > 0 || velocity.y > 500;
         const swipeUp = offset.y < 0 || velocity.y < -500;
         
         if (swipeUp) setIsExpanded(true);
         if (swipeDown) setIsExpanded(false);
       }}
-      // 3. Animation States (Variants)
+      // 2. Animation States (Variants)
       initial="expanded"
       animate={isExpanded ? "expanded" : "collapsed"}
       variants={{
         expanded: { y: 0 },
-        // Pushes the card down, leaving only the header/handle visible (~130px)
         collapsed: { y: "calc(100% - 130px)" } 
       }}
       transition={{ type: "spring", damping: 25, stiffness: 300 }}
-      
-      // 4. Styling updates
-      // Replaced absolute/bottom-20 with fixed/bottom-0 for proper mobile bottom-sheet behavior.
-      // Removed `-translate-x-1/2` from className and moved it to style to avoid transform conflicts.
-      className="fixed bottom-0 left-0 right-0 mx-auto w-[92%] md:w-[700px] lg:w-[800px] h-[95vh] bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-50 touch-none p-6 md:p-8"
-      style={{ x: "-50%" }} 
+      // removed touch-none so the list inside is scrollable
+      className="fixed bottom-0 left-0 right-0 mx-auto w-full md:w-[700px] lg:w-[800px] h-[90vh] bg-white rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] z-50 flex flex-col overflow-hidden"
     >
-      {/* Pull handle for mobile - added cursor styles and onClick toggle */}
-      <div 
-        className="w-16 h-1.5 bg-gray-300 hover:bg-gray-400 rounded-full mx-auto mb-6 md:hidden cursor-grab active:cursor-grabbing transition-colors"
-        onClick={() => setIsExpanded(!isExpanded)}
-      />
-      
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-2 md:gap-6 mb-8 mt-2 md:mt-0">
-        <div>
-          <p className="text-[10px] md:text-xs font-labels text-[var(--color-tertiary)] uppercase tracking-[0.15em] font-semibold mb-2 md:mb-3">
-            Next Arrival
-          </p>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-gray-900 leading-tight mb-2 tracking-tight">
-            Alexandria<br/>Square
-          </h2>
-          <p className="text-sm md:text-base font-sans text-gray-600">
-            Platform 2 &bull; Heading Northbound
-          </p>
-        </div>
+      {/* Header Section (Acts as Drag handle too) */}
+      <div className="bg-[var(--color-primary)] text-white p-5 md:p-6 shrink-0 relative cursor-grab active:cursor-grabbing">
+        {/* Pull handle for mobile */}
+        <div 
+          className="w-12 h-1.5 bg-white/30 hover:bg-white/50 rounded-full mx-auto mb-4 md:mb-5 transition-colors"
+          onClick={() => setIsExpanded(!isExpanded)}
+        />
         
-        <div className="text-left md:text-right mt-4 md:mt-0 flex flex-row md:flex-col items-baseline md:items-end justify-between w-full md:w-auto">
-          <div className="flex items-baseline gap-2 text-[var(--color-primary)]">
-            <span className="text-xs md:text-sm font-bold tracking-widest uppercase mb-1 md:hidden">ETA </span>
-            <span className="hidden md:inline text-sm font-bold tracking-widest uppercase mb-1 mr-1">ETA:</span>
-            <span className="text-6xl md:text-7xl font-sans font-medium tracking-tighter leading-none">7</span>
-            <span className="text-lg font-serif">minutes</span>
+        <div className="flex justify-between items-center px-2">
+          <div>
+            <div className="flex items-center gap-1.5 opacity-90 mb-1">
+              <Bus className="w-4 h-4" />
+              <span className="text-xs font-semibold tracking-wide">Bus</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-serif font-bold tracking-tight">
+              Osotsala
+            </h2>
           </div>
-          <p className="text-[10px] md:text-xs font-labels text-gray-500 mt-1 md:mt-2 uppercase tracking-widest">
-            Scheduled for 14:42
-          </p>
-        </div>
-      </div>
-
-      <div className="flex flex-col md:flex-row flex-wrap items-stretch md:items-center gap-3 md:gap-4 mb-6 md:mb-8">
-        <div className="flex gap-3 h-12 md:h-auto">
-          <div className="flex-1 md:flex-none flex justify-center items-center gap-2 px-4 py-2.5 md:py-2 bg-[var(--color-surface-lowest)] rounded-lg text-sm text-gray-700 font-sans border-0 md:border md:border-[var(--color-outline-variant)]">
-            <Bus className="w-4 h-4 text-[var(--color-primary)]" />
-            <span className="font-medium">Capacity: 30%</span>
-          </div>
-          <div className="flex-1 md:flex-none flex justify-center items-center gap-2 px-4 py-2.5 md:py-2 bg-[var(--color-surface-lowest)] rounded-lg text-sm text-gray-700 font-sans border-0 md:border md:border-[var(--color-outline-variant)]">
-            <CheckCircle2 className="w-4 h-4 text-[var(--color-primary)]" />
-            <span className="font-medium">On Time</span>
-          </div>
-        </div>
-        
-        <div className="flex-1 flex justify-end gap-3 mt-2 md:mt-0">
-          <button className="flex-1 md:flex-none px-6 py-3.5 md:py-3 bg-[var(--color-surface-lowest)] text-[var(--color-primary)] rounded-lg font-medium text-sm transition-colors hover:bg-[var(--color-surface-dim)] border-0 md:border md:border-[var(--color-outline-variant)]">
-            Notify Me
-          </button>
-          <button className="flex-1 md:flex-none px-6 py-3.5 md:py-3 bg-gradient-to-r from-[var(--color-primary)] to-[#155fc7] text-white rounded-lg font-medium text-sm transition-transform hover:scale-[1.02] shadow-[0_4px_14px_rgba(9,76,178,0.25)]">
-            View Route
+          <button className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+            <Star className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2} />
           </button>
         </div>
       </div>
 
-      <div className="flex justify-between items-center pt-5 md:pt-6 border-t border-[var(--color-outline-variant)] text-[9px] md:text-xs text-gray-400 font-labels uppercase tracking-[0.15em] font-semibold">
-        <div className="flex gap-4 md:gap-6">
-          <span className="flex items-center gap-1.5 md:gap-2">
-            <Wifi className="w-3 h-3" /> <span className="hidden md:inline">Free Onboard</span> WiFi
-          </span>
-          <span className="flex items-center gap-1.5 md:gap-2">
-            <Accessibility className="w-3 h-3" /> Fully Accessible
-          </span>
-        </div>
-        <span>Updated 30s ago</span>
+      {/* List Section */}
+      <div className="flex-1 overflow-y-auto w-full bg-gray-50 pb-8">
+        {busList.map((bus) => {
+
+          return (
+            <div key={bus.id} className="flex justify-between items-center p-4 md:px-6 md:py-5 border-b border-gray-100 bg-white hover:bg-gray-50/50 transition-colors">
+              <div className="flex-1 pr-4">
+                <h3 className="text-xl md:text-2xl font-sans font-bold text-gray-900 mb-1">
+                  {bus.number}
+                </h3>
+                <p className="text-xs md:text-sm text-gray-500 font-medium truncate">
+                  {bus.route}
+                </p>
+              </div>
+              
+              <div className="flex flex-col items-center gap-1 md:gap-2 shrink-0 w-12">
+                <div className="flex flex-col items-center justify-center text-gray-400">
+                  <Radio className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="text-[9px] md:text-[10px] font-bold uppercase mt-0.5">GPS</span>
+                </div>
+                
+                <label className="relative inline-flex items-center cursor-pointer mt-1">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer"
+                    checked={activeToggles[bus.id!] || false}
+                    onChange={() => handleToggle(bus.id!)}
+                  />
+                  <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--color-primary)]"></div>
+                </label>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </motion.div>
   );
